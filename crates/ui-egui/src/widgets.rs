@@ -55,19 +55,6 @@ pub fn ghost_button(ui: &mut egui::Ui, icon: &str, label: &str) -> Response {
     resp
 }
 
-/// A search-field lookalike that opens the command palette.
-pub fn search_box(ui: &mut egui::Ui, placeholder: &str, width: f32) -> Response {
-    let t = Tokens::get(ui.ctx());
-    let (rect, resp) = ui.allocate_exact_size(vec2(width, 32.0), Sense::click());
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), placeholder));
-    let fill = if resp.hovered() { t.hover } else { t.field };
-    ui.painter().rect(rect, CornerRadius::same(16), fill, Stroke::new(1.0, t.border), egui::StrokeKind::Inside);
-    icons::paint(ui, Rect::from_min_size(rect.min + vec2(10.0, 8.0), vec2(16.0, 16.0)), "search", 15.0, t.text_muted);
-    ui.painter().text(rect.left_center() + vec2(34.0, 0.0), Align2::LEFT_CENTER, placeholder, theme::regular(13.0), t.text_faint);
-    ui.painter().text(rect.right_center() - vec2(12.0, 0.0), Align2::RIGHT_CENTER, "⌘K", theme::regular(11.5), t.text_faint);
-    resp.on_hover_cursor(egui::CursorIcon::Text)
-}
-
 pub fn section_title(ui: &mut egui::Ui, text: &str) {
     let t = Tokens::get(ui.ctx());
     ui.add_space(10.0);

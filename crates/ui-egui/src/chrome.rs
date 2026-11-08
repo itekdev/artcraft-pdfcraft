@@ -4,7 +4,7 @@ use egui::{Align, Align2, Color32, CornerRadius, Layout, Rect, Sense, Stroke, ve
 
 use crate::canvas::{DocView, Fit, PageLayout};
 use crate::theme::{self, ThemePreference, Tokens};
-use crate::{Dialog, PdfCraftApp, PropsTab, RightPanel, icons, widgets};
+use crate::{Dialog, PdfCraftApp, RightPanel, icons, widgets};
 
 pub fn tab_strip(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
@@ -118,37 +118,6 @@ fn tab(ui: &mut egui::Ui, t: &Tokens, name: &str, dirty: bool, active: bool, clo
     }
     let shown = crate::bidi::visual(name);
     resp.on_hover_text(if dirty { crate::i18n::fmt(tl!("{name} — unsaved changes"), &[("name", shown.as_ref())]) } else { shown.into_owned() })
-}
-
-pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
-    let t = Tokens::get(ui.ctx());
-    egui::Panel::top("mode_bar")
-        .exact_size(48.0)
-        .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(10, 0)).stroke(Stroke::new(1.0, t.divider)))
-        .show(ui, |ui| {
-            ui.horizontal_centered(|ui| {
-                ui.spacing_mut().item_spacing.x = 2.0;
-                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    ui.spacing_mut().item_spacing.x = 4.0;
-                    let has_doc = app.active.is_some();
-                    ui.add_enabled_ui(has_doc, |ui| {
-                        if icons::button(ui, "printer", 32.0, false, tl!("Print (⌘P)")).clicked() {
-                            app.run_command("print.dialog");
-                        }
-                        if icons::button(ui, "save", 32.0, false, tl!("Save (M4)")).clicked() {
-                            app.run_command("file.save");
-                        }
-                        if icons::button(ui, "info", 32.0, false, tl!("Document properties (⌘D)")).clicked() {
-                            app.dialog = Some(Dialog::Properties(PropsTab::Description));
-                        }
-                    });
-                    ui.add_space(8.0);
-                    if widgets::search_box(ui, tl!("Find tools and commands"), 260.0).clicked() {
-                        app.palette_open = true;
-                    }
-                });
-            });
-        });
 }
 
 pub fn right_rail(app: &mut PdfCraftApp, ui: &mut egui::Ui) {

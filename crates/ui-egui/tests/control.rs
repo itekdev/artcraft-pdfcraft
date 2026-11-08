@@ -570,24 +570,21 @@ fn simplified_chinese_signature_prompts_and_errors_keep_document_state() {
 #[test]
 fn inspect_and_click_by_label_and_id() {
     let (mut h, c) = harness();
-    let found = ok(&mut h, &c, "ui.inspect", json!({ "query": "find tools" }));
-    let find = found["widgets"].as_array().unwrap().iter().find(|w| w["clickable"] == true).cloned().expect("the Find box");
-    let rect = find["rect"].as_array().unwrap();
+    use pdfcraft_ui_egui::canvas::PageLayout;
+    let found = ok(&mut h, &c, "ui.inspect", json!({ "query": "page display" }));
+    let button = found["widgets"].as_array().unwrap().iter().find(|w| w["clickable"] == true).cloned().expect("the Page display button");
+    let rect = button["rect"].as_array().unwrap();
     assert!(rect[2].as_f64().unwrap() > rect[0].as_f64().unwrap());
 
-    ok(&mut h, &c, "ui.click", json!({ "label": "Find tools and commands" }));
-    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], true);
-    ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
-    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], false);
+    // By id the button opens its menu; picking an item by label closes it and changes the layout.
+    ok(&mut h, &c, "ui.click", json!({ "id": button["id"] }));
+    ok(&mut h, &c, "ui.click", json!({ "label": "Single page" }));
+    assert_eq!(h.state().views[0].layout, PageLayout::Single);
 
-    ok(&mut h, &c, "ui.click", json!({ "id": find["id"] }));
-    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], true);
-    ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
-
-    // Clicking a point works too (here: the Find box's centre).
+    // Clicking a point works too: it reopens the menu.
     let [x0, y0, x1, y1] = [0, 1, 2, 3].map(|i| rect[i].as_f64().unwrap());
     ok(&mut h, &c, "ui.click", json!({ "x": (x0 + x1) / 2.0, "y": (y0 + y1) / 2.0 }));
-    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], true);
+    assert!(ok(&mut h, &c, "ui.inspect", json!({ "query": "single page" }))["count"].as_u64().unwrap() > 0);
     ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
 
     let err = call(&mut h, &c, "ui.click", json!({ "label": "No such button" })).unwrap_err();

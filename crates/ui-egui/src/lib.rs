@@ -1549,7 +1549,6 @@ impl eframe::App for PdfCraftApp {
             return;
         }
         chrome::tab_strip(self, ui);
-        chrome::mode_bar(self, ui);
         if self.active.is_some() {
             chrome::right_rail(self, ui);
             if self.right.is_some() && self.mode != Mode::Read {
