@@ -348,20 +348,6 @@ fn rail_page_display_button_switches_layouts() {
 }
 
 #[test]
-fn view_menu_page_display_uses_the_same_commands() {
-    use egui_kittest::kittest::Queryable;
-    let mut h = harness(&[]);
-    h.run_steps(4);
-    h.get_by_label("Menu").click();
-    h.run_steps(2);
-    h.get_by_label("View ⏵").hover();
-    h.run_steps(3);
-    h.get_by_label("Single page").click();
-    h.run_steps(4);
-    assert_eq!(h.state().views[0].layout, pdfcraft_ui_egui::canvas::PageLayout::Single);
-}
-
-#[test]
 fn palette_runs_page_display_commands_from_the_keyboard() {
     use egui_kittest::kittest::Queryable;
     let mut h = harness(&[]);

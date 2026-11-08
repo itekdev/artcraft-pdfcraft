@@ -182,19 +182,6 @@ fn the_palette_lists_commands_with_shortcuts_and_runs_them() {
 }
 
 #[test]
-fn the_pages_menu_comes_from_the_registry() {
-    let mut h = harness();
-    h.get_by_label("Menu").click();
-    h.run_steps(2);
-    h.get_by_label("Pages ⏵").hover();
-    h.run_steps(3);
-    h.get_by_label_contains("Delete pages").click();
-    h.run_steps(3);
-    let app = h.state();
-    assert_eq!(app.session.get(app.views[0].id).unwrap().info.pages.len(), 2);
-}
-
-#[test]
 fn the_shortcuts_dialog_lists_the_real_bindings() {
     let mut h = harness();
     h.state_mut().execute("help.shortcuts");

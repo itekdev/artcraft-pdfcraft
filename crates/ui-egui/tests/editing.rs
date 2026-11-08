@@ -457,11 +457,7 @@ fn edit_menu_names_the_step_to_undo() {
     let mut h = harness(2, |app| {
         app.apply_edit(pdfcraft_engine::Edit::RotatePages { pages: vec![0], degrees: 90 });
     });
-    h.get_by_label("Menu").click();
-    h.run_steps(2);
-    h.get_by_label("Edit ⏵").hover(); // submenus open on hover; their labels carry the arrow
-    h.run_steps(3);
-    h.get_by_label_contains("Undo Rotate page").click(); // the label includes the shortcut
+    h.state_mut().execute("edit.undo");
     h.run_steps(3);
     let app = h.state();
     let doc = app.session.get(app.views[0].id).unwrap();

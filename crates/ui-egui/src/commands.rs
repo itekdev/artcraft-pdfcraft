@@ -10,7 +10,6 @@ use pdfcraft_engine::commands::{self, COMMANDS, CommandSpec};
 use crate::{
     Dialog, Mode, PdfCraftApp, PropsTab, RightPanel, SaveTarget,
     theme::{ThemeKind, ThemePreference},
-    widgets,
 };
 
 impl PdfCraftApp {
@@ -539,21 +538,4 @@ impl PdfCraftApp {
             }
         }
     }
-}
-
-/// Render a top-level menu's registered commands (with live labels, shortcuts and enablement).
-pub(crate) fn registry_menu(app: &mut PdfCraftApp, ui: &mut egui::Ui, menu: &str) {
-    let mac = cfg!(target_os = "macos") || cfg!(target_arch = "wasm32");
-    for spec in commands::menu(menu) {
-        let label = commands::current_label(spec, &app.session, app.active_ids().map(|(_, id)| id));
-        let label = crate::i18n::menu_label(spec.id, &label);
-        let shortcut = spec.shortcut.map(|s| s.label(mac)).unwrap_or_default();
-        let enabled = app.command_enabled(spec);
-        let resp = ui.add_enabled(enabled, egui::Button::new(label).shortcut_text(shortcut));
-        if resp.clicked() {
-            app.execute(spec.id);
-            ui.close();
-        }
-    }
-    let _ = widgets::menu_item;
 }

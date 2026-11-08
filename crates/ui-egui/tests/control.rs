@@ -111,12 +111,9 @@ fn language_switch_preserves_document_and_command_ids() {
         assert_eq!(ok(&mut h, &c, "ui.commands", json!({})), commands);
 
         let lang = i18n::Lang::from_code(code).unwrap();
-        h.get_by_label(i18n::tr(lang, "Menu")).click();
+        ok(&mut h, &c, "ui.command", json!({ "id": "view.palette" }));
         h.run_steps(2);
-        h.get_by_label(&format!("{} ⏵", i18n::tr(lang, "File"))).hover();
-        h.run_steps(3);
         h.get_by_label_contains(i18n::tr(lang, "Open…"));
-        ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
         ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
         h.run_steps(2);
     }
@@ -450,7 +447,7 @@ fn japanese_controls_and_search_keep_command_ids() {
     let (mut h, c) = harness();
     ok(&mut h, &c, "ui.set", json!({ "key": "language", "value": "ja" }));
     assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["language"], "ja");
-    ok(&mut h, &c, "ui.click", json!({ "label": "閲覧" }));
+    ok(&mut h, &c, "ui.set", json!({ "key": "mode", "value": "read" }));
     assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["mode"], "Read");
 
     ok(&mut h, &c, "ui.command", json!({ "id": "app.preferences" }));
@@ -468,7 +465,7 @@ fn japanese_controls_and_search_keep_command_ids() {
     }
     assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["documents"][0]["name"], "doc.pdf");
     ok(&mut h, &c, "ui.set", json!({ "key": "language", "value": "en" }));
-    ok(&mut h, &c, "ui.click", json!({ "label": "All tools" }));
+    ok(&mut h, &c, "ui.set", json!({ "key": "mode", "value": "all tools" }));
     assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["mode"], "AllTools");
 }
 
@@ -476,11 +473,7 @@ fn japanese_controls_and_search_keep_command_ids() {
 fn preferences_menu_and_shortcut_allow_switching_interface_languages() {
     let (mut h, c) = harness();
     ok(&mut h, &c, "ui.set", json!({ "key": "language", "value": "ja" }));
-    ok(&mut h, &c, "ui.click", json!({ "label": "メニュー" }));
-    ok(&mut h, &c, "ui.click", json!({ "label": "編集 ⏵" }));
-    let menu = ok(&mut h, &c, "ui.inspect", json!({ "query": "環境設定…" }));
-    let prefs = menu["widgets"].as_array().unwrap().iter().find(|w| w["clickable"] == true).expect("Preferences menu item");
-    ok(&mut h, &c, "ui.click", json!({ "id": prefs["id"] }));
+    ok(&mut h, &c, "ui.command", json!({ "id": "app.preferences" }));
     for (current, next, code) in [("日本語", "English", "en"), ("English", "日本語", "ja")] {
         let selector = ok(&mut h, &c, "ui.inspect", json!({ "query": current }));
         let combo = selector["widgets"].as_array().unwrap().iter().find(|w| w["role"] == "ComboBox").expect("language selector");
@@ -577,23 +570,25 @@ fn simplified_chinese_signature_prompts_and_errors_keep_document_state() {
 #[test]
 fn inspect_and_click_by_label_and_id() {
     let (mut h, c) = harness();
-    let found = ok(&mut h, &c, "ui.inspect", json!({ "query": "read" }));
-    let read = found["widgets"].as_array().unwrap().iter().find(|w| w["label"] == "Read" && w["clickable"] == true).cloned().expect("a Read tab");
-    let rect = read["rect"].as_array().unwrap();
+    let found = ok(&mut h, &c, "ui.inspect", json!({ "query": "find tools" }));
+    let find = found["widgets"].as_array().unwrap().iter().find(|w| w["clickable"] == true).cloned().expect("the Find box");
+    let rect = find["rect"].as_array().unwrap();
     assert!(rect[2].as_f64().unwrap() > rect[0].as_f64().unwrap());
 
-    ok(&mut h, &c, "ui.click", json!({ "label": "Read" }));
-    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["mode"], "Read");
+    ok(&mut h, &c, "ui.click", json!({ "label": "Find tools and commands" }));
+    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], true);
+    ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
+    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], false);
 
-    let all = ok(&mut h, &c, "ui.inspect", json!({ "query": "all tools" }));
-    let id = all["widgets"].as_array().unwrap().iter().find(|w| w["label"] == "All tools" && w["clickable"] == true).unwrap()["id"].clone();
-    ok(&mut h, &c, "ui.click", json!({ "id": id }));
-    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["mode"], "AllTools");
+    ok(&mut h, &c, "ui.click", json!({ "id": find["id"] }));
+    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], true);
+    ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
 
-    // Clicking a point works too (here: the Read tab's centre).
+    // Clicking a point works too (here: the Find box's centre).
     let [x0, y0, x1, y1] = [0, 1, 2, 3].map(|i| rect[i].as_f64().unwrap());
     ok(&mut h, &c, "ui.click", json!({ "x": (x0 + x1) / 2.0, "y": (y0 + y1) / 2.0 }));
-    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["mode"], "Read");
+    assert_eq!(ok(&mut h, &c, "ui.state", json!({}))["palette_open"], true);
+    ok(&mut h, &c, "ui.key", json!({ "key": "Escape" }));
 
     let err = call(&mut h, &c, "ui.click", json!({ "label": "No such button" })).unwrap_err();
     assert!(err.contains("no enabled clickable widget"), "{err}");
