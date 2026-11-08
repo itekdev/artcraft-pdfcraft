@@ -34,6 +34,8 @@ fn fixture(n: usize) -> Vec<u8> {
 fn harness() -> Harness<'static, PdfCraftApp> {
     let mut h = Harness::builder().with_size(egui::vec2(1400.0, 900.0)).build_eframe(|_cc| {
         let mut app = PdfCraftApp::new();
+        // The left panel starts hidden; these geometry checks were tuned with it open.
+        app.left_open = true;
         app.open_bytes("a.pdf", None, fixture(5)).unwrap();
         app.open_bytes("b.pdf", None, fixture(2)).unwrap();
         app

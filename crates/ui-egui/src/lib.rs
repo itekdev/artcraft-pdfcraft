@@ -566,7 +566,7 @@ impl PdfCraftApp {
             view_defaults: Default::default(),
             mode_override: None,
             left: LeftPanel::AllTools,
-            left_open: true,
+            left_open: false,
             right: None,
             quick_tool: QuickTool::Select,
             space_hand: None,

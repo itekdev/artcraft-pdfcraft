@@ -30,7 +30,7 @@ fn harness(setup: impl FnOnce(&mut PdfCraftApp) + 'static) -> Harness<'static, P
 
 #[test]
 fn home_shows_welcome_and_tools() {
-    let h = harness(|_| {});
+    let h = harness(|app| app.left_open = true);
     h.get_by_label_contains("Welcome to PdfCraft");
     assert!(h.query_all_by_label("Organize pages").count() >= 2, "tool list + home card");
     h.get_by_label("Open file");
@@ -38,7 +38,7 @@ fn home_shows_welcome_and_tools() {
 
 #[test]
 fn every_catalog_tool_is_listed_after_view_more() {
-    let mut h = harness(|_| {});
+    let mut h = harness(|app| app.left_open = true);
     h.get_by_label("View more").click();
     h.run_steps(3);
     for g in pdfcraft_engine::catalog::TOOL_GROUPS {
