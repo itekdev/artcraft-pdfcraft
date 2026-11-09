@@ -7,6 +7,7 @@ use crate::theme::{self, Tokens};
 use crate::{LeftPanel, PdfCraftApp, icons, panels::human_size};
 
 const RECOMMENDED: [&str; 5] = ["organize", "comment", "form", "edit", "protect"];
+const EDOCPRINTER_URL: &str = "https://edocprinter.info";
 
 pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
@@ -26,6 +27,26 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     ui.add_space(10.0);
                     ui.horizontal_wrapped(|ui| {
                         ui.spacing_mut().item_spacing = vec2(14.0, 14.0);
+                        let (rect, resp) = ui.allocate_exact_size(vec2(190.0, 104.0), Sense::click());
+                        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Create PDF")));
+                        let fill = if resp.hovered() { t.hover } else { t.card };
+                        ui.painter().rect(rect, CornerRadius::same(10), fill, Stroke::new(1.0, t.divider), egui::StrokeKind::Inside);
+                        icons::paint(ui, Rect::from_min_size(rect.min + vec2(14.0, 14.0), vec2(22.0, 22.0)), "printer", 21.0, t.accent_text);
+                        ui.painter().text(rect.min + vec2(44.0, 25.0), Align2::LEFT_CENTER, tl!("Create PDF"), theme::semibold(13.5), t.text);
+                        let galley = ui.fonts_mut(|f| {
+                            f.layout(tl!("Print to create PDF by eDocPrinter").to_owned(), theme::regular(11.5), t.text_muted, rect.width() - 28.0)
+                        });
+                        ui.painter().galley(rect.min + vec2(14.0, 46.0), galley, t.text_muted);
+                        ui.painter().text(
+                            rect.left_bottom() + vec2(14.0, -14.0),
+                            Align2::LEFT_CENTER,
+                            tl!("Use now"),
+                            theme::medium(12.0),
+                            t.accent_text,
+                        );
+                        if resp.clicked() {
+                            app.open_url(EDOCPRINTER_URL);
+                        }
                         for id in RECOMMENDED {
                             let Some(g) = catalog::group(id) else { continue };
                             let (rect, resp) = ui.allocate_exact_size(vec2(190.0, 104.0), Sense::click());
