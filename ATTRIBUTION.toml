@@ -19,7 +19,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Simplified Chinese UI strings, compiled in by crates/ui-egui/src/i18n/mod.rs"
-sha256 = "fbc6e61d3f602ada7f292a034174070c00c7c789290334714f3fff5c013af2ad"
+sha256 = "3551f943f6953fbac5a4db577a1c303182a0eb924747f4b3f5d42c1cd608851e"
 
 [[asset]]
 path = "crates/ui-egui/src/i18n/zh-hant.tsv"
@@ -30,7 +30,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Traditional Chinese UI strings, compiled in by crates/ui-egui/src/i18n/mod.rs"
-sha256 = "39f83ab539f6380df995a855c1c8e8c036bcd060e06b9d1b027771e1e7d6e7ef"
+sha256 = "1d80604520614cae94ac0b90854981b28ef1ce9d5c9162acefe2b1b7cb381ee5"
 
 [[asset]]
 path = "crates/ui-egui/src/i18n/cs.tsv"
@@ -63,7 +63,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Spanish UI strings, compiled in by crates/ui-egui/src/i18n/mod.rs"
-sha256 = "4c409434bd3385b56b561c36ff819e19e574bda8979d16cd53232cb5bea3c65f"
+sha256 = "300e04a40604d58abc05e25fa66732694d5c53b6796ab4c64af0f62e0ea1bf4a"
 
 [[asset]]
 path = "crates/ui-egui/src/i18n/fr.tsv"
@@ -74,7 +74,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "French UI strings, compiled in by crates/ui-egui/src/i18n/mod.rs"
-sha256 = "d322ac956218961d22828726a7fe0752b0a68603679c2dcf17c5aa840995e124"
+sha256 = "4083c9210e57330cf7a18112414820507946d12b0fcc3c02be87afd367ac9ed5"
 
 [[asset]]
 path = "crates/ui-egui/src/i18n/ja.tsv"
@@ -85,7 +85,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Japanese UI strings, compiled in by crates/ui-egui/src/i18n/mod.rs"
-sha256 = "4b14f85bc0890823c30bff37723ecb05bc5ea5a8583334644168b08043ab6bde"
+sha256 = "72a131952f5eb121ac80eb7b8c96888d39a5f4690653adcd0226a60e5c4ad7cd"
 
 [[asset]]
 path = "assets/icons/accessibility.svg"
@@ -3119,3 +3119,14 @@ licence = "OFL-1.1"
 attribution = "https://github.com/storytold/craft-fonts/blob/main/ATTRIBUTION.md"
 kind = "font"
 usage = "Japanese fallback in the interface (BIZ UDPGothic first) and Japanese glyphs in edited PDF text (Shippori Mincho); the web build embeds only BIZ UDPGothic Regular"
+
+[[asset]]
+path = "assets/app-icon/edocprinter.png"
+title = "eDocPrinter logo, 1024 px"
+author = "iTEKSOFT (eDocPrinter team)"
+source = "Contributor-original (provided by the project owner)"
+licence = "MIT OR Apache-2.0"
+licence_file = "assets/app-icon/LICENSE.txt"
+kind = "logo"
+usage = "Logo beside the Welcome title on the home screen (crates/ui-egui/src/home.rs)"
+sha256 = "30020791f8d20d3a3707d1f14994e3dbac4b352a63047f7ceaf482a6b21dd012"

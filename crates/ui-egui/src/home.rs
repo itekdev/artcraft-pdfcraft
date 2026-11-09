@@ -8,12 +8,40 @@ use crate::{LeftPanel, PdfCraftApp, icons, panels::human_size};
 
 const RECOMMENDED: [&str; 5] = ["organize", "comment", "form", "edit", "protect"];
 const EDOCPRINTER_URL: &str = "https://edocprinter.info";
+const LOGO_PNG: &[u8] = include_bytes!("../../../assets/app-icon/edocprinter.png");
+/// The logo is kept at this many pixels square; it is drawn at `LOGO_SHOWN` points beside the title.
+const LOGO_PX: u32 = 256;
+const LOGO_SHOWN: f32 = 36.0;
+
+/// The title logo as a texture, decoded once. `None` (no logo shown) if the PNG can't be decoded.
+fn logo(ctx: &egui::Context) -> Option<egui::TextureHandle> {
+    let id = egui::Id::new("home-logo");
+    if let Some(cached) = ctx.data(|d| d.get_temp::<Option<egui::TextureHandle>>(id)) {
+        return cached;
+    }
+    let texture = decode_logo().map(|image| ctx.load_texture("home-logo", image, egui::TextureOptions::LINEAR));
+    ctx.data_mut(|d| d.insert_temp(id, texture.clone()));
+    texture
+}
+
+fn decode_logo() -> Option<egui::ColorImage> {
+    let image = image::load_from_memory_with_format(LOGO_PNG, image::ImageFormat::Png).ok()?;
+    let image = image.resize(LOGO_PX, LOGO_PX, image::imageops::FilterType::Lanczos3).into_rgba8();
+    let size = [usize::try_from(image.width()).ok()?, usize::try_from(image.height()).ok()?];
+    Some(egui::ColorImage::from_rgba_unmultiplied(size, image.as_raw()))
+}
 
 pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
         egui::Frame::NONE.inner_margin(egui::Margin { left: 36, right: 36, top: 28, bottom: 28 }).show(ui, |ui| {
-            ui.label(egui::RichText::new(tl!("Welcome to PDF.Expert")).font(theme::semibold(24.0)));
+            ui.horizontal(|ui| {
+                if let Some(tex) = logo(ui.ctx()) {
+                    ui.add(egui::Image::new(&tex).fit_to_exact_size(vec2(LOGO_SHOWN, LOGO_SHOWN)));
+                    ui.add_space(8.0);
+                }
+                ui.label(egui::RichText::new(tl!("Welcome to PDF.Expert")).font(theme::semibold(24.0)));
+            });
             ui.add_space(22.0);
 
             egui::Frame::NONE
