@@ -11,7 +11,7 @@ const EDOCPRINTER_URL: &str = "https://edocprinter.info";
 const LOGO_PNG: &[u8] = include_bytes!("../../../assets/app-icon/edocprinter.png");
 /// The logo is kept at this many pixels square; it is drawn at `LOGO_SHOWN` points beside the title.
 const LOGO_PX: u32 = 256;
-const LOGO_SHOWN: f32 = 36.0;
+const LOGO_SHOWN: f32 = 54.0;
 
 /// The title logo as a texture, decoded once. `None` (no logo shown) if the PNG can't be decoded.
 fn logo(ctx: &egui::Context) -> Option<egui::TextureHandle> {
